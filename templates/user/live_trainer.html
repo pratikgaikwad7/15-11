@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Live Trainer Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #003366;
+      --secondary-color: #0077b6;
+      --accent-color: #f72585;
+      --light-gray: #f8f9fa;
+      --dark-gray: #212529;
+      --success-color: #4cc9f0;
+      --danger-color: #ef233c;
+      --warning-color: #f8961e;
+      --info-color: #4895ef;
+      --card-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      --card-hover-shadow: 0 6px 16px rgba(0, 55, 102, 0.1);
+      --filter-col-min-width: 180px;
+      --filter-gap: 18px;
+      --row-gap: 20px;
+      --border-radius: 10px;
+      --panel-width: 350px;
+      --toggle-size: 40px;
+      --control-area-height: 70px;
+      --strip-margin-bottom: 10px;
+      --card-bg: rgba(255,255,255,0.95);
+      --light-text: #ffffff;
+      --dark-text: #0f172a;
+      --navbar-width: 70px;
+      --pink-color: #f72585;
+      --male-color: #4361ee;
+      --female-color: #f72585;
+      --sdc-internal-color: #4361ee;
+      --sdc-external-color: #f72585;
+      --shop-support-color: #f8961e;
+    }
+
+    *, *:after, *:before {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: auto;
+      margin: 0;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+      font-size: 14px;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+      background: linear-gradient(135deg, #08203e 0%, #557c93 100%);
+      font-family: 'Poppins', sans-serif;
+    }
+
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar {
+      display: none;
+    }
+
+    body {
+      padding-top: 0;
+    }
+
+    .dashboard-container {
+      width: 100%;
+      max-width: 1800px;
+      margin-top: 250px;
+      padding: 20px;
+      padding-left: calc(20px + var(--navbar-width));
+      transition: all 0.3s ease;
+    }
+
+    .heading-icon {
+      width: 18px;
+      height: 18px;
+      fill: var(--secondary-color);
+      flex-shrink: 0;
+    }
+    
+    .filter-control-area {
+      position: fixed;
+      top: 105px;
+      height: var(--control-area-height);
+      background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+      border-radius: 0 0 10px 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border-left: 3px solid #4361ee;
+      border-bottom: 2px solid #4361ee;
+      border-right: 2px solid #4361ee;
+      display: flex;
+      align-items: center;
+      padding: 0 15px;
+      z-index: 9999;
+      transition: all 0.3s ease;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .filter-control-area.fixed {
+      position: fixed;
+      top: 0;
+      left: 15px;
+      right: 15px;
+      margin: 0;
+    }
+    
+    .filter-control-area.panel-open {
+      left: calc(15px + var(--panel-width));
+    }
+
+    .filter-toggle-btn {
+      width: var(--toggle-size);
+      height: var(--toggle-size);
+      border-radius: 50%;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: var(--card-shadow);
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+      z-index: 1001;
+      position: relative;
+    }
+    
+    .filter-toggle-btn:hover {
+      background-color: var(--secondary-color);
+      transform: scale(1.05);
+    }
+    
+    .filter-toggle-btn i {
+      font-size: 16px;
+    }
+    
+    .filter-label-container {
+      background-color: rgb(67, 161, 255);
+      border-radius: 20px;
+      padding: 5px 12px;
+      margin: 0 15px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      gap: 8px;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+    
+    .filter-label-container:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .filter-label-text {
+      font-weight: 600;
+      color: white;
+      font-size: 0.9rem;
+      white-space: nowrap;
+      user-select: none;
+      cursor: pointer;
+    }
+    
+    .applied-filters-strip {
+      flex: 1;
+      overflow: hidden;
+      background: transparent;
+      padding: 0;
+      margin: 0;
+      border: none;
+      box-shadow: none;
+      position: relative;
+      left: 0;
+      width: auto;
+      top: auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    .applied-filters-container {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    
+    .applied-filters-title {
+      font-weight: 600;
+      color: #000000;
+      margin-right: 6px;
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+    
+    .applied-filters-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      overflow: hidden;
+    }
+    
+    .applied-filter-item {
+      background-color: rgb(255, 255, 255);
+      border-radius: 12px;
+      border: 1px solid #36363628;
+      padding: 2px 6px;
+      font-size: 0.9rem;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+      display: flex;
+      align-items: center;
+      transition: transform 0.1s ease;
+    }
+    
+    .applied-filter-item:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 3px rgba(0, 0, 0, 0.08);
+    }
+    
+    .filter-key {
+      font-weight: 600;
+      color: #3a0ca3;
+      margin-right: 3px;
+    }
+    
+    .filter-value {
+      color: #4a5568;
+      font-weight: 500;
+    }
+    
+    .updated-date-container {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    
+    .date-display {
+      background-color: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      padding: 2px 6px;
+      font-size: 0.8rem;
+      border: 1px solid #36363628;
+      color: #4a5568;
+      font-weight: 600;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+      display: inline-flex;
+      align-items: center;
+      transition: transform 0.1s ease;
+    }
+    
+    .date-display:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .filter-side-panel {
+      position: fixed;
+      top: 0;
+      left: calc(-1 * var(--panel-width));
+      width: var(--panel-width);
+      height: 100vh;
+      background-color: white;
+      box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+      z-index: 9999;
+      transition: left 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .filter-side-panel.active {
+      left: 0;
+    }
+    
+    .filter-panel-header {
+      padding: 15px 20px;
+      background-color: var(--primary-color);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .filter-panel-header h3 {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+    
+    .filter-panel-actions {
+      padding: 15px;
+      background-color: var(--light-gray);
+      border-bottom: 1px solid #e9ecef;
+      z-index: 10;
+      display: flex;
+      gap: 10px;
+    }
+    
+    .filter-panel-actions .btn {
+      flex: 1;
+      margin-bottom: 0;
+      transition: all 0.2s ease;
+    }
+    
+    .filter-panel-actions .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .filter-panel-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px;
+      transition: all 0.3s ease;
+    }
+    
+    .filter-group {
+      margin-bottom: 20px;
+    }
+    
+    .filter-group .filter-col {
+      margin-bottom: 15px;
+    }
+    
+    .filter-section {
+      background: #ffffff;
+      border-radius: var(--border-radius);
+      box-shadow: var(--card-shadow);
+      padding: 20px;
+      margin-bottom: 15px;
+      transition: all 0.25s ease;
+    }
+    
+    .filter-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(var(--filter-col-min-width), 1fr));
+      gap: var(--filter-gap);
+      margin-bottom: var(--row-gap);
+      align-items: flex-end;
+    }
+    
+    .filter-col {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    
+    .filter-label {
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--primary-color);
+      font-size: 0.85rem;
+    }
+    
+    input.form-control,
+    select.form-select {
+      height: 38px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      background-color: #ffffff;
+      font-size: 0.85rem;
+      font-weight: normal;
+      padding: 0 12px;
+      width: 100%;
+      transition: all 0.2s ease;
+    }
+    
+    input.form-control:focus,
+    select.form-select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 0.15rem rgba(0,55,102,0.15);
+    }
+    
+    .input-with-icon {
+      position: relative;
+    }
+    
+    .input-with-icon .search-icon {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #9ca3af;
+      font-size: 0.8rem;
+    }
+    
+    .range-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    
+    .actions-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    
+    .actions-row .half-width {
+      flex: 1 1 48%;
+    }
+    
+    .btn {
+      height: 38px;
+      border-radius: var(--border-radius);
+      font-weight: 500;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      padding: 0 14px;
+    }
+    
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    
+    .loading-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+      min-height: 120px;
+    }
+
+    .loading-spinner {
+      border: 3px solid rgba(0, 0, 0, 0.1);
+      border-left-color: var(--primary-color);
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 10px;
+    }
+    
+    /* ===========================
+       Stats Grid - Updated with Metrics Styling
+    =========================== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 22px;
+      margin-bottom: 32px;
+      transition: all 0.3s ease;
+    }
+
+   .stat-card {
+  position: relative;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: var(--card-shadow);
+  height: 160px;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border-top: 5px solid #00f2ffff;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--card-hover-shadow);
+}
+
+.stat-card .card-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.metric-subcard-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.metric-subcard {
+  padding: 15px;
+  text-align: center;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(31, 30, 30, 0.1);
+  transition: background-color 0.2s;
+}
+
+.metric-subcard:hover {
+  background-color: #f8f9fa;
+}
+
+.metric-subcard:last-child {
+  border-bottom: none;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.stat-icon {
+  font-size: 24px;
+  color: #0000B8;
+}
+
+.stat-value {
+  font-weight: 700;
+  font-size: 28px;
+  margin: 5px 0;
+  color: #0000B8;
+}
+
+.stat-title {
+  font-size: 14px;
+  color: #000000;
+  margin: 0;
+  line-height: 1.3;
+  font-weight: 500;
+}
+
+.download-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: transparent;
+  color: #0000B8;
+  border: 1px solid #4361ee;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font-size: 16px;
+  transition: all 0.2s ease;
+}
+
+.download-btn:hover {
+  background-color: #4361ee;
+  color: white;
+  transform: scale(1.05);
+}
+
+.download-btn i {
+  font-size: 14px;
+}
+
+/* Total Count Card Specific Styles */
+.total-card {
+  border-top: 5px solid var(--primary-color) !important;
+}
+
+.total-card .stat-icon {
+  color: var(--primary-color) !important;
+}
+
+.total-card .stat-value {
+  color: var(--primary-color) !important;
+}
+
+.total-card .download-btn {
+  color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+}
+
+.total-card .download-btn:hover {
+  background-color: var(--primary-color) !important;
+}
+
+/* SDC Internal Card Specific Styles */
+.sdc-internal-card {
+  border-top: 5px solid var(--sdc-internal-color) !important;
+}
+
+.sdc-internal-card .stat-icon {
+  color: var(--sdc-internal-color) !important;
+}
+
+.sdc-internal-card .stat-value {
+  color: var(--sdc-internal-color) !important;
+}
+
+.sdc-internal-card .download-btn {
+  color: var(--sdc-internal-color) !important;
+  border-color: var(--sdc-internal-color) !important;
+}
+
+.sdc-internal-card .download-btn:hover {
+  background-color: var(--sdc-internal-color) !important;
+}
+
+/* SDC External Card Specific Styles */
+.sdc-external-card {
+  border-top: 5px solid var(--sdc-external-color) !important;
+}
+
+.sdc-external-card .stat-icon {
+  color: var(--sdc-external-color) !important;
+}
+
+.sdc-external-card .stat-value {
+  color: var(--sdc-external-color) !important;
+}
+
+.sdc-external-card .download-btn {
+  color: var(--sdc-external-color) !important;
+  border-color: var(--sdc-external-color) !important;
+}
+
+.sdc-external-card .download-btn:hover {
+  background-color: var(--sdc-external-color) !important;
+}
+
+/* Shop Support Card Specific Styles */
+.shop-support-card {
+  border-top: 5px solid var(--shop-support-color) !important;
+}
+
+.shop-support-card .stat-icon {
+  color: var(--shop-support-color) !important;
+}
+
+.shop-support-card .stat-value {
+  color: var(--shop-support-color) !important;
+}
+
+.shop-support-card .download-btn {
+  color: var(--shop-support-color) !important;
+  border-color: var(--shop-support-color) !important;
+}
+
+.shop-support-card .download-btn:hover {
+  background-color: var(--shop-support-color) !important;
+}
+
+    .data-table-container {
+      background-color: var(--card-bg);
+      border-radius: 14px;
+      box-shadow: var(--card-shadow);
+      padding: 30px;
+      overflow-x: auto;
+      margin-bottom: 30px;
+      display: none;
+      transition: all 0.3s ease;
+    }
+
+    .table {
+      width: 100%;
+      color: var(--dark-text);
+      border-collapse: collapse;
+    }
+
+    .table th {
+      font-weight: 600;
+      text-align: left;
+      padding: 12px 15px;
+      background: #f1f5f9;
+      border-bottom: 2px solid rgba(15, 23, 42, 0.1);
+    }
+
+    .table td {
+      padding: 12px 15px;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.05);
+    }
+
+    .table tr:hover td {
+      background: #f8fafc;
+    }
+
+    .toggle-raw-data {
+      margin-bottom: 20px;
+    }
+
+    /* Improved loading spinner styles */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .loading-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .loading-spinner-container {
+      background-color: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .loading-spinner {
+      border: 3px solid rgba(0, 0, 0, 0.1);
+      border-left-color: var(--primary-color);
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 10px;
+    }
+
+    .loading-text {
+      font-size: 14px;
+      color: var(--dark-gray);
+      font-weight: 500;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Pagination styles */
+    .pagination-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .load-more-btn {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 20px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .load-more-btn:hover {
+      background-color: var(--secondary-color);
+    }
+
+    .load-more-btn:disabled {
+      background-color: #a0aec0;
+      cursor: not-allowed;
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-container {
+        padding: 15px;
+        padding-left: calc(15px + var(--navbar-width));
+        margin-top: 100px;
+      }
+      
+      .dashboard-title {
+        font-size: 1.8rem;
+      }
+
+      .filter-control-area {
+        top: 60px;
+        left: 0;
+        width: 100%;
+        padding-left: calc(var(--navbar-width) + 15px);
+      }
+
+      .filter-side-panel {
+        width: 100%;
+        left: 0;
+        top: 130px;
+        height: calc(100vh - 130px);
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .filter-row {
+        grid-template-columns: 1fr;
+      }
+      
+      .table {
+        font-size: 0.8rem;
+      }
+      
+      .table th, .table td {
+        padding: 8px 10px;
+      }
+      
+      .filter-panel-actions {
+        flex-direction: column;
+      }
+      
+      .filter-panel-actions .btn {
+        margin-bottom: 10px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .filter-actions {
+        flex-direction: column;
+      }
+      
+      .btn {
+        width: 100%;
+      }
+
+      .filter-label-container {
+        margin: 0 10px;
+      }
+
+      .applied-filters-strip {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  
+  {% include 'user/navbar.html' %}
+
+  <!-- Improved Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner-container">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Loading data...</div>
+    </div>
+  </div>
+
+  <!-- Filter Control Area -->
+  <div class="filter-control-area" id="filterControlArea">
+    <!-- Filter Toggle Button -->
+    <button class="filter-toggle-btn" id="filterToggleBtn" title="Toggle Filters">
+      <i class="fas fa-filter"></i>
+    </button>
+    
+    <!-- Filter Label Container (now clickable) -->
+    <div class="filter-label-container" id="filterLabelContainer">
+      <i class="fas fa-filter"></i>
+      <div class="filter-label-text">Choose Filter</div>
+    </div>
+    
+    <!-- Applied Filters Strip -->
+    <div class="applied-filters-strip" id="applied-filters">
+      <div class="applied-filters-container">
+        <span class="applied-filters-title">Applied Filters:</span>
+        <div class="applied-filters-list" id="appliedFiltersList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Side Panel -->
+  <div class="filter-side-panel" id="filterSidePanel">
+    <div class="filter-panel-header">
+      <h3>Filter Options</h3>
+      <button type="button" class="btn-close btn-close-white" id="closeFilterBtn" aria-label="Close"></button>
+    </div>
+    
+    <div class="filter-panel-content">
+      <div class="filter-section">
+        <div class="filter-row">
+          <div class="filter-col">
+            <label class="filter-label">Faculty Name</label>
+            <select class="form-control" id="filter-faculty-name">
+              <option value="all">All Faculties</option>
+            </select>
+          </div>
+          <div class="filter-col">
+            <label class="filter-label">Area</label>
+            <select class="form-control" id="filter-area">
+              <option value="all">All Areas</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="filter-row">
+          <div class="filter-col">
+            <label class="filter-label">Department</label>
+            <select class="form-control" id="filter-dept">
+              <option value="all">All Departments</option>
+            </select>
+          </div>
+          <div class="filter-col">
+            <label class="filter-label">Factory</label>
+            <select class="form-control" id="filter-factory">
+              <option value="all">All Factories</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="filter-row">
+          <div class="filter-col">
+            <label class="filter-label">Expertise Area</label>
+            <select class="form-control" id="filter-expertise-area">
+              <option value="all">All Expertise Areas</option>
+            </select>
+          </div>
+          <div class="filter-col">
+            <label class="filter-label">Expertise Category</label>
+            <select class="form-control" id="filter-expertise-category">
+              <option value="all">All Categories</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="filter-row">
+          <div class="filter-col">
+            <label class="filter-label">HR Coordinator</label>
+            <select class="form-control" id="filter-hr-coordinator">
+              <option value="all">All Coordinators</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="filter-row">
+          <div class="filter-col">
+            <label class="filter-label">Ticket Number</label>
+            <input type="text" class="form-control" id="filter-ticket" placeholder="Search ticket numbers">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="filter-panel-actions">
+      <button class="btn btn-primary" id="apply-filters">
+        <i class="bi bi-funnel"></i> Apply Filters
+      </button>
+      <button class="btn btn-secondary" id="reset-filters">
+        <i class="bi bi-arrow-counterclockwise"></i> Reset
+      </button>
+    </div>
+  </div>
+
+  <div class="dashboard-container">
+    <div class="stats-grid">
+      <!-- Total Count Card -->
+      <div class="stat-card total-card">
+        <div class="card-body">
+          <div class="metric-subcard-container">
+            <div class="metric-subcard">
+              <div class="card-header">
+                <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
+                <button class="btn btn-sm download-btn" id="download-excel-btn" title="Download Report">
+                  <i class="bi bi-download"></i>
+                </button>
+              </div>
+              <div class="stat-title">Total Count</div>
+              <div class="stat-value" id="stat-total">0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- SDC Internal Count Card -->
+      <div class="stat-card sdc-internal-card">
+        <div class="card-body">
+          <div class="metric-subcard-container">
+            <div class="metric-subcard">
+              <div class="card-header">
+                <div class="stat-icon"><i class="bi bi-building"></i></div>
+                <button class="btn btn-sm download-btn" id="download-sdc-internal-btn" title="Download SDC Internal Report">
+                  <i class="bi bi-download"></i>
+                </button>
+              </div>
+              <div class="stat-title">SDC Internal</div>
+              <div class="stat-value" id="stat-sdc-internal">0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- SDC Third Party Count Card -->
+      <div class="stat-card sdc-external-card">
+        <div class="card-body">
+          <div class="metric-subcard-container">
+            <div class="metric-subcard">
+              <div class="card-header">
+                <div class="stat-icon"><i class="bi bi-building"></i></div>
+                <button class="btn btn-sm download-btn" id="download-sdc-external-btn" title="Download SDC External Report">
+                  <i class="bi bi-download"></i>
+                </button>
+              </div>
+              <div class="stat-title">SDC Third Party</div>
+              <div class="stat-value" id="stat-sdc-external">0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Shop Support Count Card -->
+      <div class="stat-card shop-support-card">
+        <div class="card-body">
+          <div class="metric-subcard-container">
+            <div class="metric-subcard">
+              <div class="card-header">
+                <div class="stat-icon"><i class="bi bi-tools"></i></div>
+                <button class="btn btn-sm download-btn" id="download-shop-support-btn" title="Download Shop Support Report">
+                  <i class="bi bi-download"></i>
+                </button>
+              </div>
+              <div class="stat-title">Shop Support</div>
+              <div class="stat-value" id="stat-shop-support">0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="toggle-raw-data form-check form-switch">
+      <input class="form-check-input" type="checkbox" id="show-raw-data">
+      <label class="form-check-label" for="show-raw-data">Show Raw Data</label>
+    </div>
+
+    <div class="data-table-container" id="raw-data-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Sr No</th>
+            <th>Faculty Name</th>
+            <th>Ticket No</th>
+            <th>Mail ID</th>
+            <th>Mobile Number</th>
+            <th>Area</th>
+            <th>Department</th>
+            <th>Factory</th>
+            <th>Reporting Manager Name</th>
+            <th>Reporting Manager Mail ID</th>
+            <th>Expertise Area</th>
+            <th>Expertise Category</th>
+            <th>HR Coordinator Name</th>
+            <th>Remark</th>
+          </tr>
+        </thead>
+        <tbody id="raw-data-body">
+          <!-- Data will be populated here -->
+        </tbody>
+      </table>
+      <div class="pagination-container">
+        <button class="load-more-btn" id="load-more-btn">Load More</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Include necessary scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // DOM Elements
+      const filterToggleBtn = document.getElementById('filterToggleBtn');
+      const filterLabelContainer = document.getElementById('filterLabelContainer');
+      const filterSidePanel = document.getElementById('filterSidePanel');
+      const filterControlArea = document.getElementById('filterControlArea');
+      const closeFilterBtn = document.getElementById('closeFilterBtn');
+      const applyFiltersBtn = document.getElementById('apply-filters');
+      const resetFiltersBtn = document.getElementById('reset-filters');
+      const showRawDataToggle = document.getElementById('show-raw-data');
+      const rawDataContainer = document.getElementById('raw-data-container');
+      const rawDataBody = document.getElementById('raw-data-body');
+      const appliedFiltersStrip = document.getElementById('applied-filters');
+      const appliedFiltersList = document.getElementById('appliedFiltersList');
+      const loadingOverlay = document.getElementById('loadingOverlay');
+      const loadMoreBtn = document.getElementById('load-more-btn');
+      const downloadExcelBtn = document.getElementById('download-excel-btn');
+      const downloadSdcInternalBtn = document.getElementById('download-sdc-internal-btn');
+      const downloadSdcExternalBtn = document.getElementById('download-sdc-external-btn');
+      const downloadShopSupportBtn = document.getElementById('download-shop-support-btn');
+      
+      // Filter elements
+      const filterFacultyName = document.getElementById('filter-faculty-name');
+      const filterArea = document.getElementById('filter-area');
+      const filterDept = document.getElementById('filter-dept');
+      const filterFactory = document.getElementById('filter-factory');
+      const filterExpertiseArea = document.getElementById('filter-expertise-area');
+      const filterExpertiseCategory = document.getElementById('filter-expertise-category');
+      const filterHrCoordinator = document.getElementById('filter-hr-coordinator');
+      const filterTicket = document.getElementById('filter-ticket');
+      
+      // Stat elements
+      const statTotal = document.getElementById('stat-total');
+      const statSdcInternal = document.getElementById('stat-sdc-internal');
+      const statSdcExternal = document.getElementById('stat-sdc-external');
+      const statShopSupport = document.getElementById('stat-shop-support');
+
+      // Pagination variables
+      let currentPage = 0;
+      const pageSize = 50;
+      let totalRecords = 0;
+      let isLoading = false;
+      let isInitialized = false;
+
+      // Toggle filter panel
+      filterToggleBtn.addEventListener('click', toggleFilterPanel);
+      filterLabelContainer.addEventListener('click', toggleFilterPanel);
+      closeFilterBtn.addEventListener('click', toggleFilterPanel);
+      
+      function toggleFilterPanel() {
+        filterSidePanel.classList.toggle('active');
+        filterControlArea.classList.toggle('panel-open');
+      }
+
+      // Close filter panel when clicking outside
+      document.addEventListener('click', function(event) {
+        if (
+          !filterSidePanel.contains(event.target) &&
+          !filterToggleBtn.contains(event.target) &&
+          !filterLabelContainer.contains(event.target) &&
+          filterSidePanel.classList.contains('active')
+        ) {
+          filterSidePanel.classList.remove('active');
+          filterControlArea.classList.remove('panel-open');
+        }
+      });
+
+      // Improved loading functions
+      function showLoading() {
+        loadingOverlay.classList.add('active');
+      }
+      
+      function hideLoading() {
+        loadingOverlay.classList.remove('active');
+      }
+
+      // Fetch filter options from database
+      function fetchFilterOptions() {
+        // Only show loading spinner on initial load
+        if (!isInitialized) {
+          showLoading();
+        }
+        
+        // Fixed URL path to match Flask blueprint prefix
+        fetch('/user_tech/api/live_trainer/filter-options')
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.json();
+          })
+          .then(data => {
+            console.log('Filter options data:', data); // Debug: log the response
+            
+            // Populate faculty name options
+            filterFacultyName.innerHTML = '<option value="all">All Faculties</option>';
+            data.faculties.forEach(faculty => {  // Changed from faculty_names to faculties
+              const option = document.createElement('option');
+              option.value = faculty;
+              option.textContent = faculty;
+              filterFacultyName.appendChild(option);
+            });
+            
+            // Populate area options
+            filterArea.innerHTML = '<option value="all">All Areas</option>';
+            data.areas.forEach(area => {
+              const option = document.createElement('option');
+              option.value = area;
+              option.textContent = area;
+              filterArea.appendChild(option);
+            });
+            
+            // Populate department options
+            filterDept.innerHTML = '<option value="all">All Departments</option>';
+            data.departments.forEach(dept => {
+              const option = document.createElement('option');
+              option.value = dept;
+              option.textContent = dept;
+              filterDept.appendChild(option);
+            });
+            
+            // Populate factory options
+            filterFactory.innerHTML = '<option value="all">All Factories</option>';
+            data.factories.forEach(factory => {
+              const option = document.createElement('option');
+              option.value = factory;
+              option.textContent = factory;
+              filterFactory.appendChild(option);
+            });
+            
+            // Populate expertise area options
+            filterExpertiseArea.innerHTML = '<option value="all">All Expertise Areas</option>';
+            data.expertise_areas.forEach(area => {
+              const option = document.createElement('option');
+              option.value = area;
+              option.textContent = area;
+              filterExpertiseArea.appendChild(option);
+            });
+            
+            // Populate expertise category options
+            filterExpertiseCategory.innerHTML = '<option value="all">All Categories</option>';
+            data.expertise_categories.forEach(category => {
+              const option = document.createElement('option');
+              option.value = category;
+              option.textContent = category;
+              filterExpertiseCategory.appendChild(option);
+            });
+            
+            // Load initial data
+            fetchLiveTrainerData();
+            
+            // Mark as initialized
+            isInitialized = true;
+          })
+          .catch(error => {
+            console.error('Error fetching filter options:', error);
+            alert('Error loading filter options. Please try again later.');
+            hideLoading();
+          });
+      }
+
+      // Fetch live trainer data based on filters
+      function fetchLiveTrainerData(isLoadMore = false) {
+        if (isLoading) return;
+        
+        if (!isLoadMore) {
+          currentPage = 0;
+          rawDataBody.innerHTML = '';
+        }
+        
+        // Only show loading spinner if not initial load
+        if (isInitialized) {
+          showLoading();
+        }
+        
+        isLoading = true;
+        
+        // Build filter parameters
+        const filters = {
+          faculty: filterFacultyName.value,  // Changed from faculty_name to faculty
+          area: filterArea.value,
+          department: filterDept.value,  // Changed from dept to department
+          factory: filterFactory.value,
+          expertise_area: filterExpertiseArea.value,
+          expertise_category: filterExpertiseCategory.value,
+          ticket: filterTicket.value,
+          limit: pageSize,
+          offset: currentPage * pageSize
+        };
+        
+        console.log('Applying filters:', filters); // Debug: log filters
+        
+        // Build query string
+        const queryString = new URLSearchParams();
+        for (const key in filters) {
+          if (filters[key] !== 'all' && filters[key] !== '') {
+            queryString.append(key, filters[key]);
+          }
+        }
+        
+        // Fixed URL path to match Flask blueprint prefix
+        fetch(`/user_tech/api/live_trainer/data?${queryString.toString()}`)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.json();
+          })
+          .then(data => {
+            console.log('Live trainer data:', data); // Debug: log the response
+            
+            // Update statistics
+            statTotal.textContent = data.stats.total_count;
+            statSdcInternal.textContent = data.stats.sdc_internal_count;
+            statSdcExternal.textContent = data.stats.sdc_third_party_count;
+            statShopSupport.textContent = data.stats.shop_support_count;
+            
+            // Update raw data if visible
+            if (showRawDataToggle.checked) {
+              updateRawDataTable(data.records, isLoadMore);
+            }
+            
+            // Update applied filters display
+            updateAppliedFilters(filters);
+            
+            // Update pagination
+            totalRecords = data.total_records;
+            updatePagination();
+            
+            hideLoading();
+            isLoading = false;
+          })
+          .catch(error => {
+            console.error('Error fetching live trainer data:', error);
+            alert('Error loading data. Please try again later.');
+            hideLoading();
+            isLoading = false;
+          });
+      }
+
+      // Update raw data table
+      function updateRawDataTable(records, isAppend = false) {
+        if (!isAppend) {
+          rawDataBody.innerHTML = '';
+        }
+        
+        if (records.length === 0 && !isAppend) {
+          const row = document.createElement('tr');
+          row.innerHTML = '<td colspan="15" class="text-center">No data found</td>';
+          rawDataBody.appendChild(row);
+          return;
+        }
+        
+        records.forEach(record => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${record.sr_no || ''}</td>
+            <td>${record.faculty_name || ''}</td>
+            <td>${record.ticket_no || ''}</td>
+            <td>${record.mail_id || ''}</td>
+            <td>${record.mobile_number || ''}</td>
+            <td>${record.area || ''}</td>
+            <td>${record.dept || ''}</td>
+            <td>${record.factory || ''}</td>
+            <td>${record.reporting_manager_name || ''}</td>
+            <td>${record.reporting_manager_mail_id || ''}</td>
+            <td>${record.expertise_area || ''}</td>
+            <td>${record.expertise_category || ''}</td>
+            <td>${record.hr_coordinator_name || ''}</td>
+            <td>${record.remark || ''}</td>
+          `;
+          rawDataBody.appendChild(row);
+        });
+      }
+
+      // Update pagination
+      function updatePagination() {
+        const loadedRecords = currentPage * pageSize + rawDataBody.children.length;
+        
+        if (loadedRecords >= totalRecords) {
+          loadMoreBtn.disabled = true;
+          loadMoreBtn.textContent = 'All records loaded';
+        } else {
+          loadMoreBtn.disabled = false;
+          loadMoreBtn.textContent = 'Load More';
+        }
+      }
+
+      // Update applied filters display
+      function updateAppliedFilters(filters) {
+        appliedFiltersList.innerHTML = '';
+        let hasFilters = false;
+        
+        const filterLabels = {
+          faculty: 'Faculty Name',  // Changed from faculty_name to faculty
+          area: 'Area',
+          department: 'Department',  // Changed from dept to department
+          factory: 'Factory',
+          expertise_area: 'Expertise Area',
+          expertise_category: 'Expertise Category',
+          ticket: 'Ticket Number'
+        };
+        
+        for (const key in filters) {
+          if (filters[key] && filters[key] !== 'all' && filters[key] !== '' && key !== 'limit' && key !== 'offset') {
+            hasFilters = true;
+            const filterItem = document.createElement('div');
+            filterItem.className = 'applied-filter-item';
+            
+            filterItem.innerHTML = `
+              <span class="filter-key">${filterLabels[key]}:</span>
+              <span class="filter-value">${filters[key]}</span>
+            `;
+            appliedFiltersList.appendChild(filterItem);
+          }
+        }
+        
+        appliedFiltersStrip.style.display = hasFilters ? 'flex' : 'none';
+      }
+
+      // Function to download data by area
+      function downloadByArea(area) {
+        // Build the same filter parameters as when fetching data
+        const filters = {
+          faculty: filterFacultyName.value,  // Changed from faculty_name to faculty
+          area: area, // This will be 'SDC Internal', 'SDC Third Party', or 'Shop Support'
+          department: filterDept.value,  // Changed from dept to department
+          factory: filterFactory.value,
+          expertise_area: filterExpertiseArea.value,
+          expertise_category: filterExpertiseCategory.value,
+          ticket: filterTicket.value
+        };
+        
+        // Build query string
+        const queryString = new URLSearchParams();
+        for (const key in filters) {
+          if (filters[key] !== 'all' && filters[key] !== '') {
+            queryString.append(key, filters[key]);
+          }
+        }
+        
+        // Fixed URL path to match Flask blueprint prefix
+        const downloadUrl = `/user_tech/api/live_trainer/download?${queryString.toString()}`;
+        window.location.href = downloadUrl;
+      }
+
+      // Event listeners
+      applyFiltersBtn.addEventListener('click', function() {
+        fetchLiveTrainerData();
+        // Hide filter panel after applying filters
+        filterSidePanel.classList.remove('active');
+        filterControlArea.classList.remove('panel-open');
+      });
+      
+      resetFiltersBtn.addEventListener('click', function() {
+        filterFacultyName.value = 'all';
+        filterArea.value = 'all';
+        filterDept.value = 'all';
+        filterFactory.value = 'all';
+        filterExpertiseArea.value = 'all';
+        filterExpertiseCategory.value = 'all';
+        filterHrCoordinator.value = 'all';
+        filterTicket.value = '';
+        
+        fetchLiveTrainerData();
+        // Hide filter panel after resetting
+        filterSidePanel.classList.remove('active');
+        filterControlArea.classList.remove('panel-open');
+      });
+      
+      showRawDataToggle.addEventListener('change', function() {
+        rawDataContainer.style.display = this.checked ? 'block' : 'none';
+        if (this.checked) {
+          // If toggled on, refresh data to show in table
+          fetchLiveTrainerData();
+        }
+      });
+
+      // Load more button event listener
+      loadMoreBtn.addEventListener('click', function() {
+        currentPage++;
+        fetchLiveTrainerData(true);
+      });
+
+      // Download Excel button event listeners
+      downloadExcelBtn.addEventListener('click', function() {
+        // Build the same filter parameters as when fetching data
+        const filters = {
+          faculty: filterFacultyName.value,  // Changed from faculty_name to faculty
+          area: filterArea.value,
+          department: filterDept.value,  // Changed from dept to department
+          factory: filterFactory.value,
+          expertise_area: filterExpertiseArea.value,
+          expertise_category: filterExpertiseCategory.value,
+          ticket: filterTicket.value
+        };
+        
+        // Build query string
+        const queryString = new URLSearchParams();
+        for (const key in filters) {
+          if (filters[key] !== 'all' && filters[key] !== '') {
+            queryString.append(key, filters[key]);
+          }
+        }
+        
+        // Fixed URL path to match Flask blueprint prefix
+        const downloadUrl = `/user_tech/api/live_trainer/download?${queryString.toString()}`;
+        window.location.href = downloadUrl;
+      });
+
+      downloadSdcInternalBtn.addEventListener('click', function() {
+        downloadByArea('SDC Internal');
+      });
+
+      downloadSdcExternalBtn.addEventListener('click', function() {
+        downloadByArea('SDC Third Party');
+      });
+
+      downloadShopSupportBtn.addEventListener('click', function() {
+        downloadByArea('Shop Support');
+      });
+
+      // Initialize the dashboard
+      fetchFilterOptions();
+    });
+  </script>
+</body>
+</html>
