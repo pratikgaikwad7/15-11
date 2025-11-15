@@ -1,3 +1,30 @@
+Sr. No
+
+Faculty Name
+
+Ticket Number
+
+Mail ID
+
+Mobile Number
+
+Area
+
+Department
+
+Factory
+
+Reporting Manager Name
+
+Reporting Manager Mail ID
+
+Expertise Area
+
+Expertise Category
+
+HR Coordinator Name
+
+Remark
 CREATE TABLE live_trainer (
     sr_no INT AUTO_INCREMENT PRIMARY KEY,
     faculty_name VARCHAR(255),
@@ -152,5 +179,6 @@ CREATE TABLE ta (
     final_result VARCHAR(50),
     training_name VARCHAR(200)
 );
+
 
 
