@@ -1,3 +1,20 @@
+CREATE TABLE live_trainer (
+    sr_no INT AUTO_INCREMENT PRIMARY KEY,
+    faculty_name VARCHAR(255),
+    ticket_no VARCHAR(50),
+    mail_id VARCHAR(255),
+    mobile_number VARCHAR(20),
+    area VARCHAR(100),
+    dept VARCHAR(100),
+    factory VARCHAR(100),
+    reporting_manager_name VARCHAR(255),
+    reporting_manager_mail_id VARCHAR(255),
+    expertise_area VARCHAR(255),
+    expertise_category VARCHAR(100),
+    hr_coordinator_name VARCHAR(255),
+    remark TEXT
+);
+
 CREATE TABLE fst (
     sr_no INT AUTO_INCREMENT PRIMARY KEY,
     ticket_no VARCHAR(50),
@@ -135,4 +152,5 @@ CREATE TABLE ta (
     final_result VARCHAR(50),
     training_name VARCHAR(200)
 );
+
 
